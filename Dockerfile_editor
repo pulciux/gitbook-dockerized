@@ -1,0 +1,39 @@
+FROM debian:jessie
+MAINTAINER Gianluigi Belli <gianluigi.belli@blys.it>
+LABEL Description="Dockerized GitBook editor" Version="1.0.0"
+
+#where the library will be located
+ENV BOOKUSRHOME /var/lib/gitbook
+ENV BOOKLIBRARY $BOOKUSRHOME/GitBook/Library
+ENV BOOKUSR bookwriter
+
+#it adds a user to run the editor
+RUN addgroup --gid 1000 $BOOKUSR \
+    && adduser --home $BOOKUSRHOME --uid 1000 --disabled-password --ingroup $BOOKUSR $BOOKUSR \
+    && mkdir -p $BOOKLIBRARY \
+    && chown -R $BOOKUSR:$BOOKUSR $BOOKUSRHOME
+
+#Download package
+ADD https://www.gitbook.com/editor/linux-64-bit/download  /root/gitbook-editor.deb
+
+#Install dependencies and clean up
+RUN apt-get update && apt-get install -y \
+        libnss3 \
+        libgconf-2-4 \
+        libnotify4 \
+        libgtk2.0-0 \
+        libxss1 \
+        libasound2 \
+        libcanberra-gtk3-module \
+        git \
+    && dpkg -i /root/gitbook-editor.deb \
+    && rm /root/gitbook-editor.deb \
+    && apt-get clean cache
+
+#run as unprivileged user
+USER $BOOKUSR
+WORKDIR $BOOKUSRHOME
+
+VOLUME $BOOKUSRHOME
+
+CMD ["gitbook-editor"]

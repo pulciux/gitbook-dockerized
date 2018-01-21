@@ -1,0 +1,31 @@
+FROM node:slim
+MAINTAINER Gianluigi Belli <gianluigi.belli@blys.it>
+LABEL Description="Dockerized GitBook server" Version="1.0.0"
+
+#where to serve the book and who serves
+ENV BOOKDIR /var/lib/gitbook
+ENV BOOKUSR 1000
+
+#install gitbook and clean cache
+RUN npm install gitbook-cli -g \
+     &&	npm cache clear --force\
+     &&	rm -rf /tmp/* \
+     && gitbook fetch latest
+
+#Set the entrypoint script
+COPY server_entrypoint.sh /usr/bin/entrypoint.sh
+RUN chmod +x /usr/bin/entrypoint.sh
+
+#make the book root directory
+RUN mkdir -p $BOOKDIR \
+    && chown $BOOKUSR:$BOOKUSR $BOOKDIR
+
+#run as unprivileged user
+USER $BOOKUSR
+WORKDIR $BOOKDIR
+
+EXPOSE 4000 35729
+VOLUME $BOOKDIR
+
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]
+CMD ["serve"]

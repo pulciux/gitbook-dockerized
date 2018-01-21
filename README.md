@@ -15,8 +15,8 @@ To learn more about what GitBook is, please visit the official website: [https:/
 
 # Supported tags and respective `Dockerfile` links:
 
-* server, server-1, server-1.0, server-1.0.0, latest
-* editor, editor-1, editor-1.0, editor-1.0.0
+* [server, server-1, server-1.0, server-1.0.0, latest](https://github.com/pulciux/gitbook-dockerized/blob/master/Dockerfile_server)
+* [editor, editor-1, editor-1.0, editor-1.0.0](https://github.com/pulciux/gitbook-dockerized/blob/master/Dockerfile_editor)
 
 # Server usage:
 
